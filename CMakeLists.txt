@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR) # required by cmake eigen finder to find locally installed versions (e.g., CUDA 9.2 support was added in eigen 3.3.5)
+
 ### VERSION INFO
 set(OpenPose_VERSION_MAJOR 1)
 set(OpenPose_VERSION_MINOR 7)
@@ -31,7 +33,7 @@ elseif (${CMAKE_VERSION} VERSION_GREATER 3.0.0)
 else (${CMAKE_VERSION} VERSION_GREATER 3.9.0)
   project(OpenPose)
 endif (${CMAKE_VERSION} VERSION_GREATER 3.9.0)
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR) # required by cmake eigen finder to find locally installed versions (e.g., CUDA 9.2 support was added in eigen 3.3.5)
+
 # cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR) # min. cmake version recommended by Caffe
 
 
@@ -113,7 +115,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   # set(OP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -Wpedantic -Wall -Wextra -Wfatal-errors")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
   set(OP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Wall -Wextra -Wfatal-errors")
-  # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Wpedantic -Wall -Wextra -Wfatal-errors")
+  # set(_NVCC_FLAGS "${_NVCC_FLAGS} -Wpedantic -Wall -Wextra -Wfatal-errors")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 # Select the Enhanced Instruction Set
@@ -194,24 +196,24 @@ endif (${DL_FRAMEWORK} MATCHES "CAFFE" OR ${DL_FRAMEWORK} MATCHES "NV_CAFFE")
 if (APPLE)
   set(GPU_MODE CPU_ONLY CACHE STRING "Select the acceleration GPU library or CPU otherwise.")
 else (APPLE)
-  set(GPU_MODE CUDA CACHE STRING "Select the acceleration GPU library or CPU otherwise.")
+  set(GPU_MODE  CACHE STRING "Select the acceleration GPU library or CPU otherwise.")
 endif (APPLE)
 # Display proper options to user
-# if (CUDA_FOUND AND OpenCL_FOUND)
-#   set_property(CACHE GPU_MODE PROPERTY STRINGS CUDA OPENCL CPU_ONLY)
-# elseif (CUDA_FOUND)
-#   set_property(CACHE GPU_MODE PROPERTY STRINGS CUDA CPU_ONLY)
+# if (_FOUND AND OpenCL_FOUND)
+#   set_property(CACHE GPU_MODE PROPERTY STRINGS  OPENCL CPU_ONLY)
+# elseif (_FOUND)
+#   set_property(CACHE GPU_MODE PROPERTY STRINGS  CPU_ONLY)
 # elseif (OpenCL_FOUND)
 #   set_property(CACHE GPU_MODE PROPERTY STRINGS OPENCL CPU_ONLY)
 # else ()
 #   set_property(CACHE GPU_MODE PROPERTY STRINGS CPU_ONLY)
-# endif (CUDA_FOUND AND OpenCL_FOUND)
-set_property(CACHE GPU_MODE PROPERTY STRINGS CUDA OPENCL CPU_ONLY)
+# endif (_FOUND AND OpenCL_FOUND)
+set_property(CACHE GPU_MODE PROPERTY STRINGS  OPENCL CPU_ONLY)
 
-# Look for CUDA
+# Look for 
 set(CUDA_FOUND FALSE)
 if (${GPU_MODE} MATCHES "CUDA")
-  find_package(CUDA)
+  enable_language(CUDA)
 endif (${GPU_MODE} MATCHES "CUDA")
 # Look for OpenCL
 set(OpenCL_FOUND FALSE)
@@ -350,7 +352,7 @@ mark_as_advanced(DOWNLOAD_SERVER)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 
 if (${GPU_MODE} MATCHES "CUDA")
-  find_package(CUDA)
+  enable_language(CUDA)
 endif (${GPU_MODE} MATCHES "CUDA")
 
 # Adding 3D
